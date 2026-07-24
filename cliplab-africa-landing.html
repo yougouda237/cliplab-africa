@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLIPLAB AFRICA — Creez votre musique en ligne</title>
+<style>
+  :root {
+    --bg: #060610;
+    --surface: #0f0f20;
+    --border: #1a1a35;
+    --text: #f0f0f8;
+    --muted: #8080a0;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --cyan: #06b6d4;
+    --amber: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --grad: linear-gradient(135deg, #8b5cf6, #ec4899);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.6; overflow-x: hidden;
+  }
+
+  /* Animated bg */
+  .bg-particles {
+    position: fixed; inset:0; pointer-events:none; z-index:0; opacity:0.4;
+  }
+  .particle {
+    position: absolute; border-radius: 50%;
+    animation: float 12s infinite ease-in-out;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); opacity:0.3; }
+    50% { transform: translateY(-60px) scale(1.4); opacity:0.7; }
+  }
+
+  .wrap { max-width:1100px; margin:0 auto; padding:0 20px; position:relative; z-index:1; }
+
+  /* Nav */
+  .nav {
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 20px 0; position:relative; z-index:10;
+  }
+  .nav-logo { font-size:1.2rem; font-weight:800; display:flex; align-items:center; gap:6px; }
+  .nav-logo b { background: var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .nav-logo svg { flex-shrink:0; }
+  .btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:12px 24px; border-radius:50px; font-weight:700; font-size:0.9rem;
+    text-decoration:none; cursor:pointer; transition:all 0.25s; border:none;
+    font-family:inherit;
+  }
+  .btn-purple { background:var(--purple); color:#fff; box-shadow:0 4px 20px rgba(139,92,246,0.3); }
+  .btn-purple:hover { background:#7c3aed; transform:translateY(-2px); box-shadow:0 8px 30px rgba(139,92,246,0.45); }
+  .btn-outline { background:transparent; color:var(--text); border:1.5px solid rgba(255,255,255,0.2); }
+  .btn-outline:hover { border-color:var(--purple); color:var(--purple); }
+  .btn-big { padding:16px 36px; font-size:1rem; }
+
+  /* Hero */
+  .hero {
+    text-align:center; padding:80px 0 60px; position:relative; z-index:2;
+  }
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25);
+    color:var(--green); padding:8px 20px; border-radius:50px;
+    font-size:0.82rem; font-weight:600; margin-bottom:32px;
+    animation: pulse-badge 2s infinite;
+  }
+  @keyframes pulse-badge { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.2)} 50%{box-shadow:0 0 0 10px rgba(16,185,129,0)} }
+  .hero-badge .dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.8rem); font-weight:900;
+    line-height:1.1; margin-bottom:20px; letter-spacing:-1.5px;
+  }
+  .hero h1 .hl { background: var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p {
+    color:var(--muted); font-size:1.1rem; max-width:600px; margin:0 auto 36px;
+  }
+  .hero p strong { color:var(--text); }
+  .hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:60px; }
+
+  /* Counter strip */
+  .counters {
+    display:flex; justify-content:center; gap:40px; flex-wrap:wrap;
+  }
+  .count-item { text-align:center; }
+  .count-num { font-size:2.2rem; font-weight:900; }
+  .count-num.c1 { color:var(--purple); } .count-num.c2 { color:var(--pink); } .count-num.c3 { color:var(--cyan); }
+  .count-label { font-size:0.8rem; color:var(--muted); margin-top:2px; }
+
+  /* Sections */
+  .sec { padding:80px 0; position:relative; z-index:2; }
+  .sec-tag {
+    font-size:0.75rem; text-transform:uppercase; letter-spacing:2px;
+    color:var(--purple); font-weight:700; margin-bottom:10px;
+  }
+  .sec h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight:800; margin-bottom:12px; letter-spacing:-0.5px; }
+  .sec .sub { color:var(--muted); font-size:1rem; max-width:540px; }
+
+  /* Problem - 3 big cards */
+  .cards3 {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:16px; margin-top:44px;
+  }
+  .card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:20px; padding:36px 28px; transition:all 0.3s;
+  }
+  .card:hover { border-color:rgba(255,255,255,0.12); transform:translateY(-4px); }
+  .card-num { font-size:3rem; font-weight:900; opacity:0.06; margin-bottom:-28px; }
+  .card h3 { font-size:1.15rem; font-weight:700; margin-bottom:8px; position:relative; z-index:1; }
+  .card p { color:var(--muted); font-size:0.92rem; line-height:1.6; }
+  .card .price-tag {
+    display:inline-block; margin-top:14px; padding:6px 14px; border-radius:8px;
+    font-size:0.8rem; font-weight:700;
+  }
+  .tag-red { background:rgba(239,68,68,0.1); color:var(--red); }
+  .tag-purple { background:rgba(139,92,246,0.1); color:var(--purple); }
+  .tag-amber { background:rgba(245,158,11,0.1); color:var(--amber); }
+
+  /* Steps */
+  .steps3 {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px; margin-top:44px;
+  }
+  .step {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:20px; padding:40px 28px 32px; text-align:center; transition:all 0.3s;
+    position:relative;
+  }
+  .step:hover { border-color:rgba(255,255,255,0.12); transform:translateY(-4px); }
+  .step-badge {
+    width:52px; height:52px; border-radius:16px;
+    background:var(--grad); display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; font-weight:900; margin:0 auto 20px;
+    box-shadow:0 6px 24px rgba(139,92,246,0.3);
+  }
+  .step h3 { font-size:1.05rem; font-weight:700; margin-bottom:6px; }
+  .step p { color:var(--muted); font-size:0.88rem; line-height:1.55; }
+
+  /* How different */
+  .diff-table {
+    margin-top:44px; border-radius:20px; overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .diff-row {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    padding:16px 24px; align-items:center;
+    background:var(--surface);
+  }
+  .diff-row:nth-child(odd) { background:var(--surface); }
+  .diff-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .diff-head { background:var(--surface) !important; font-weight:700; font-size:0.85rem; padding:20px 24px; color:var(--muted); }
+  .diff-win { color:var(--green); font-weight:700; }
+  .diff-lose { color:var(--text-muted); }
+  .diff-us { color:var(--purple); font-weight:700; }
+
+  /* Pricing */
+  .pricing3 {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:16px; margin-top:44px;
+  }
+  .plan {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:24px; padding:40px 28px; text-align:center; transition:all 0.3s;
+  }
+  .plan:hover { border-color:rgba(255,255,255,0.12); transform:translateY(-4px); }
+  .plan.star {
+    background:linear-gradient(160deg, #100a28, #0a0820);
+    border-color:var(--purple);
+    box-shadow:0 8px 40px rgba(139,92,246,0.18);
+  }
+  .plan.star::before {
+    content:'Le plus choisi'; position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+    background:var(--purple); color:#fff; font-size:0.7rem; font-weight:700;
+    padding:4px 16px; border-radius:50px; letter-spacing:0.5px; text-transform:uppercase;
+  }
+  .plan { position:relative; }
+  .plan h3 { font-size:1.15rem; font-weight:700; margin-bottom:4px; }
+  .plan .price {
+    font-size:2.8rem; font-weight:900; margin:20px 0 4px;
+    background:linear-gradient(135deg, var(--text), #aaa);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .plan.star .price {
+    background:var(--grad);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .plan .price small { font-size:0.85rem; font-weight:400; }
+  .plan .creations { font-size:0.85rem; color:var(--amber); font-weight:600; margin-bottom:4px; }
+  .plan .period { color:var(--muted); font-size:0.82rem; margin-bottom:28px; }
+  .plan ul { list-style:none; text-align:left; margin-bottom:32px; }
+  .plan ul li {
+    padding:8px 0; font-size:0.9rem; color:var(--muted);
+    display:flex; align-items:center; gap:10px;
+  }
+  .plan ul li::before {
+    content:''; width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0;
+  }
+
+  /* CTA */
+  .cta-big {
+    text-align:center; padding:100px 0;
+    background:radial-gradient(ellipse at center, rgba(139,92,246,0.08) 0%, transparent 70%);
+    border-radius:28px; margin:40px 0; border:1px solid rgba(139,92,246,0.1);
+    position:relative; z-index:2;
+  }
+  .cta-big h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight:800; margin-bottom:10px; }
+  .cta-big p { color:var(--muted); margin-bottom:36px; font-size:1.05rem; }
+
+  /* Footer */
+  footer {
+    text-align:center; padding:36px 0; color:var(--muted); font-size:0.82rem;
+    border-top:1px solid rgba(255,255,255,0.05); position:relative; z-index:2;
+  }
+  footer a { color:var(--purple); text-decoration:none; font-weight:600; }
+
+  /* SVG icon helper */
+  .ico { display:inline-block; vertical-align:middle; flex-shrink:0; }
+  .ico-s { width:20px; height:20px; }
+  .ico-m { width:28px; height:28px; }
+
+  @media (max-width:600px) {
+    .hero { padding:50px 0 40px; }
+    .sec { padding:56px 0; }
+    .counters { gap:24px; }
+    .diff-row { grid-template-columns:1fr 1fr; font-size:0.78rem; }
+    .diff-row .diff-head:last-child { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-particles" aria-hidden="true">
+  <div class="particle" style="width:80px;height:80px;background:radial-gradient(circle,rgba(139,92,246,0.15),transparent);top:10%;left:5%;animation-delay:0s;"></div>
+  <div class="particle" style="width:120px;height:120px;background:radial-gradient(circle,rgba(236,72,153,0.1),transparent);top:60%;right:5%;animation-delay:3s;"></div>
+  <div class="particle" style="width:60px;height:60px;background:radial-gradient(circle,rgba(6,182,212,0.1),transparent);top:30%;left:70%;animation-delay:6s;"></div>
+  <div class="particle" style="width:100px;height:100px;background:radial-gradient(circle,rgba(139,92,246,0.1),transparent);top:70%;left:30%;animation-delay:9s;"></div>
+</div>
+
+<div class="wrap">
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <svg class="ico ico-m" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="6" cy="18" r="3"/><circle cx="14" cy="16" r="3"/><path d="M9 18V5l11-2v13"/></svg>
+    CLIPLAB <b>AFRICA</b>
+  </div>
+  <a href="#pricing" class="btn btn-outline">Voir les tarifs</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> Ouverture prochaine — Cameroun</div>
+  <h1>Creez votre musique<br>sans <span class="hl">studio couteux</span></h1>
+  <p>
+    Un <strong>vrai studio</strong> dans votre telephone. Pas de materiel. Pas d'abonnement.
+    <br>Payez <strong>seulement quand vous creez</strong>.
+  </p>
+  <div class="hero-btns">
+    <a href="#pricing" class="btn btn-purple btn-big">
+      <svg class="ico ico-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="8,12 12,8 16,12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
+      Voir les forfaits
+    </a>
+    <a href="#how" class="btn btn-outline btn-big">
+      <svg class="ico ico-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6,3 20,12 6,21"/></svg>
+      Comment ca marche
+    </a>
+  </div>
+  <div class="counters">
+    <div class="count-item"><div class="count-num c1">0 XAF</div><div class="count-label">pour commencer</div></div>
+    <div class="count-item"><div class="count-num c2">100%</div><div class="count-label">en ligne</div></div>
+    <div class="count-item"><div class="count-num c3">1 min</div><div class="count-label">pour demarrer</div></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="sec">
+  <div class="sec-tag">Le probleme</div>
+  <h2>Pourquoi c'est si dur de creer sa musique ?</h2>
+  <p class="sub">Si vous etes jeune au Cameroun, vous connaissez deja la reponse.</p>
+  <div class="cards3">
+    <div class="card">
+      <div class="card-num">01</div>
+      <h3>Le studio est trop cher</h3>
+      <p>Une seule session = 25 000 XAF. C'est un mois d'economies. La plupart des jeunes abandonnent avant d'avoir commence.</p>
+      <span class="price-tag tag-red">25 000 XAF / session</span>
+    </div>
+    <div class="card">
+      <div class="card-num">02</div>
+      <h3>Les logiciels sont inaccessibles</h3>
+      <p>FL Studio, Ableton... 300 $ et plus. Il faut un bon PC, une carte son, un micro. Trop cher.</p>
+      <span class="price-tag tag-purple">300 $ minimum</span>
+    </div>
+    <div class="card">
+      <div class="card-num">03</div>
+      <h3>Les applis existantes nous ignorent</h3>
+      <p>BandLab, Soundtrap : en anglais, pas de Mobile Money, zero template Makossa ou Afrobeats.</p>
+      <span class="price-tag tag-amber">0 solution africaine</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="sec" id="how">
+  <div class="sec-tag">Comment ca marche</div>
+  <h2>3 etapes. Rien de complique.</h2>
+  <p class="sub">Pas besoin d'etre un pro. Si vous savez utiliser WhatsApp, vous saurez utiliser CLIPLAB AFRICA.</p>
+  <div class="steps3">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <h3>Ouvrez le site</h3>
+      <p>Sur votre telephone, n'importe quel navigateur. Même en 3G, ca fonctionne. Aucun telechargement.</p>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <h3>Choisissez votre style</h3>
+      <p>Afrobeats, Makossa, Gospel, Coupe-Decale... On a deja prepare les instruments pour vous.</p>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <h3>Creez, payez, exportez</h3>
+      <p>Enregistrez votre voix, mixez, puis exportez. Payez en Mobile Money. Simple.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENCE -->
+<section class="sec">
+  <div class="sec-tag">Pourquoi nous</div>
+  <h2>Qu'est-ce qui change avec CLIPLAB AFRICA ?</h2>
+  <p class="sub">On n'a pas essaye de copier les autres. On a construit pour l'Afrique.</p>
+  <div class="diff-table">
+    <div class="diff-row diff-head"><div></div><div>Les autres</div><div>CLIPLAB AFRICA</div></div>
+    <div class="diff-row"><div>Prix</div><div class="diff-lose">10-15 $ / mois</div><div class="diff-us">0 XAF pour essayer</div></div>
+    <div class="diff-row"><div>Paiement</div><div class="diff-lose">Carte bancaire</div><div class="diff-us">Orange Money, MTN MoMo</div></div>
+    <div class="diff-row"><div>Langue</div><div class="diff-lose">Anglais</div><div class="diff-us">Francais</div></div>
+    <div class="diff-row"><div>Genres</div><div class="diff-lose">Pop, EDM, Hip-Hop</div><div class="diff-us">Afrobeats, Makossa, Gospel...</div></div>
+    <div class="diff-row"><div>Internet</div><div class="diff-lose">Haut debit requis</div><div class="diff-us">Fonctionne en 3G</div></div>
+    <div class="diff-row"><div>Hors ligne</div><div class="diff-lose">Non</div><div class="diff-us">Oui (PWA)</div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="pricing">
+  <div class="sec-tag">Tarifs</div>
+  <h2>Payez seulement quand vous creez</h2>
+  <p class="sub">Pas d'abonnement. Payez en XAF avec Orange Money ou MTN Mobile Money.</p>
+  <div class="pricing3">
+    <div class="plan">
+      <h3>Gratuit</h3>
+      <div class="price">0 <small>XAF</small></div>
+      <div class="period">pour essayer</div>
+      <ul>
+        <li>1 creation d'essai</li><li>Studio de base</li><li>Export avec filigrane</li><li>Support par email</li>
+      </ul>
+      <a href="#cta" class="btn btn-outline" style="width:100%;justify-content:center;">Commencer</a>
+    </div>
+    <div class="plan star">
+      <h3>Creator</h3>
+      <div class="price">12 000 <small>XAF</small></div>
+      <div class="creations">10 creations</div>
+      <div class="period">1 200 XAF / creation</div>
+      <ul>
+        <li>10 creations studio</li><li>Export HD sans filigrane</li><li>Tous les instruments</li><li>Templates africains</li><li>Effets professionnels</li><li>Support prioritaire</li>
+      </ul>
+      <a href="#cta" class="btn btn-purple" style="width:100%;justify-content:center;">Je choisis Creator</a>
+    </div>
+    <div class="plan">
+      <h3>Pro</h3>
+      <div class="price">25 000 <small>XAF</small></div>
+      <div class="creations">25 creations</div>
+      <div class="period">1 000 XAF / creation</div>
+      <ul>
+        <li>25 creations studio</li><li>Mastering IA</li><li>Distribution Boomplay, Audiomack</li><li>Collaboration live</li><li>Stockage etendu</li><li>Nouveautes en avant-premiere</li>
+      </ul>
+      <a href="#cta" class="btn btn-outline" style="width:100%;justify-content:center;">Je choisis Pro</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-big" id="cta">
+  <h2>Pret a creer votre premier morceau ?</h2>
+  <p>Inscrivez-vous a la liste d'attente. On vous previent des l'ouverture.</p>
+  <a href="mailto:sakelame237@gmail.com?subject=CLIPLAB%20AFRICA%20-%20Inscription" class="btn btn-purple btn-big">
+    <svg class="ico ico-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+    Rejoindre la liste d'attente
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>2026 CLIPLAB AFRICA — La musique pour tous.</p>
+  <p style="margin-top:6px;"><a href="mailto:sakelame237@gmail.com">sakelame237@gmail.com</a> &nbsp;|&nbsp; Cameroun</p>
+</footer>
+
+</div>
+</body>
+</html>
